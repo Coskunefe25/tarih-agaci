@@ -1,7 +1,7 @@
-/* script.js dosyanın tamamını sil ve bunu yapıştır */
+
 
 async function yapayZekayaAnlat(isim) {
-    // Kullanıcıya "Bekle..." mesajı ver
+  
     alert(isim + " için yapay zeka hazırlanıyor...");
 
     const response = await fetch('/api/ai-anlat', {
@@ -12,9 +12,8 @@ async function yapayZekayaAnlat(isim) {
 
     const veri = await response.json();
     
-    // Gelen cevabı ekranda göster (Modal içinde veya bir div içinde)
     console.log(veri.anlatim); 
-    // Burayı kendi ekranına göre ayarla: document.getElementById('aciklama').innerText = veri.anlatim;
+    
 }
 
 
@@ -49,7 +48,7 @@ let dersQuizIndeksi = 0;
 let dersQuizDogruSayisi = 0;
 let tamamlananlar = []; 
 
-// Oyun Değişkenleri
+
 let oyunQuizIndeksi = 0;
 let oyunQuizPuani = 0;
 let eslesmePuani = 0;
@@ -104,7 +103,7 @@ async function uygulamayiGoster(kullanici) {
     profiliGoster(kullanici);
 }
 
-// --- DÜZELTME BURADA: ONCLICK ARTIK yapayZekaDersiAc ÇAĞIRIYOR ---
+
 function icerikleriOlustur(tip, veriListesi, kapsayiciId) {
     const container = document.getElementById(kapsayiciId);
     if(!container) return;
@@ -259,7 +258,7 @@ function eslesmeyiKontrolEt() {
     cevrilenKartlar = [];
 }
 
-// --- GÜNLÜK LİDER (GÜNCELLENDİ: yapayZekaDersiAc KULLANIYOR) ---
+
 function gunlukLideriYukle() {
     if (typeof liderlerVerisi === 'undefined' || liderlerVerisi.length === 0) return;
 
@@ -339,8 +338,6 @@ function geriSayimiBaslat() {
         sayacElem.innerText = `${saat.toString().padStart(2, '0')}:${dakika.toString().padStart(2, '0')}:${saniye.toString().padStart(2, '0')}`;
     }, 1000);
 }
-
-// --- DERS QUIZ FONKSİYONLARI ---
 async function dersQuiziniBaslat(tip, id) {
     const btn = document.getElementById('dersAksiyonBtn');
     btn.innerText = "Yükleniyor...";
@@ -456,7 +453,6 @@ async function dersiTamamla(puan) {
         return;
     }
 
-    // Butona tıklandığını belli edelim (kullanıcı dondu sanmasın)
     const btn = document.getElementById('dersAksiyonBtn');
     const eskiYazi = btn.innerText;
     btn.innerText = "Kaydediliyor...";
@@ -475,25 +471,23 @@ async function dersiTamamla(puan) {
         });
         
         if(res.ok) {
-            // 1. İlerlemeyi yerel hafızaya (RAM) ekle ki kilitler açılsın
+           
             const zatenVar = tamamlananlar.some(t => t.konu_tipi === aktifKonu.tip && t.konu_id == aktifKonu.id);
             if (!zatenVar) {
                 tamamlananlar.push({ konu_tipi: aktifKonu.tip, konu_id: parseInt(aktifKonu.id) });
             }
             
-            // 2. Kullanıcının puanını güncelle
+          
             kullanici.puan = (kullanici.puan || 0) + puan;
             localStorage.setItem('mevcutKullanici', JSON.stringify(kullanici));
             
-            // 3. Arayüzü yenile (Kilitleri açmak için)
             uygulamayiGoster(kullanici); 
 
-            // 4. Kategori içindeysek o sayfayı da yenile
+           
             if (aktifKonu.tip !== 'lider' && aktifKonu.tip !== 'devlet') {
                 kategoriAc(aktifKonu.tip);
             }
 
-            // 5. Modalı "Tamamlandı" moduna çek
             const govde = document.getElementById('dersGovdesi');
             document.getElementById('dersDurum').innerText = "Tamamlandı";
           
@@ -504,30 +498,27 @@ async function dersiTamamla(puan) {
                     <p class="lead">Puanınız hesabınıza eklendi.</p>
                 </div>`;
             
-           // 👇 BURAYI YAPIŞTIR 👇
-            
-            // Butonu "Sonraki Ders" butonuna çeviriyoruz
             btn.innerText = "Sonraki Ders  ⏭️";
-            btn.className = "btn btn-primary rounded-pill px-4 shadow"; // Rengi mavi (primary) yaptık
+            btn.className = "btn btn-primary rounded-pill px-4 shadow"; 
             btn.disabled = false;
             
-            // Yeni Tıklama Olayı: Modalı kapat ve yenisini aç
+            
             btn.onclick = () => {
-                // 1. Şu anki modalı kapat
+             
                 const modalEl = document.getElementById('dersModal');
                 const modal = bootstrap.Modal.getInstance(modalEl);
                 modal.hide();
 
-                // 2. Yarım saniye bekle ve sonraki dersi aç
+               
                 setTimeout(() => {
                     const sonrakiIndex = aktifKonu.index + 1;
                     
-                    // Listeye göre uzunluğu belirle
+                    
                     let listeUzunlugu = 0;
                     if(aktifKonu.tip === 'lider') listeUzunlugu = liderlerVerisi.length;
                     else if(aktifKonu.tip === 'devlet') listeUzunlugu = devletlerVerisi.length;
                     
-                    // Eğer daha ders varsa aç
+                    
                     if (sonrakiIndex < listeUzunlugu) {
                         yapayZekaDersiAc(aktifKonu.tip, sonrakiIndex);
                     } else {
@@ -535,13 +526,12 @@ async function dersiTamamla(puan) {
                     }
                 }, 500); 
             };
-            // 👆 BURAYA KADAR 👆
+           
 
         } else {
-            // Sunucu hata kodu döndürdüyse
             const hataVerisi = await res.json();
             alert("Kayıt hatası: " + (hataVerisi.error || "Bilinmeyen hata"));
-            btn.innerText = eskiYazi; // Butonu eski haline getir
+            btn.innerText = eskiYazi; 
             btn.disabled = false;
         }
 
@@ -552,8 +542,6 @@ async function dersiTamamla(puan) {
         btn.disabled = false;
     }
 }
-
-// --- DİĞER FONKSİYONLAR ---
 function kategoriAc(id) {
     const veri = kategoriVerisi[id];
     if(!veri) return;
@@ -677,8 +665,6 @@ function profiliGoster(kullanici) {
         }).join('');
     }
 }
-
-// CHAT BOT
 function chatAcKapat() { const pencere = document.getElementById('chatPenceresi'); pencere.classList.toggle('aktif'); if(pencere.classList.contains('aktif')) setTimeout(() => document.getElementById('chatInput').focus(), 300); }
 function enterKontrol(event) { if (event.key === "Enter") mesajGonder(); }
 async function mesajGonder() {
@@ -704,8 +690,6 @@ async function mesajGonder() {
     }
     mesajAlani.scrollTop = mesajAlani.scrollHeight;
 }
-
-// PUAN SİSTEMİ
 async function puanVer(miktar) {
     const kullanici = mevcutKullaniciyiGetir();
     if (!kullanici) return;
@@ -832,10 +816,9 @@ function siralamayiKontrolEt() {
         setTimeout(() => { elemanlar.forEach(el => el.classList.remove('yanlis', 'dogru')); sonucAlani.innerHTML = ""; }, 1500);
     }
 }
-// script.js içine (En alta)
 
 async function sifreGuncelle() {
-    // Modal içindeki inputların ID'lerini kullanıyoruz
+  
     const eskiSifreInput = document.getElementById('modal-eski-sifre');
     const yeniSifreInput = document.getElementById('modal-yeni-sifre');
     const yeniSifreTekrarInput = document.getElementById('modal-yeni-sifre-tekrar');
@@ -844,7 +827,6 @@ async function sifreGuncelle() {
     const yeniSifre = yeniSifreInput.value;
     const yeniSifreTekrar = yeniSifreTekrarInput.value;
     
-    // 1. Kontroller
     if (yeniSifre !== yeniSifreTekrar) {
         alert("❌ Yeni şifreler birbiriyle uyuşmuyor!");
         return;
@@ -861,7 +843,6 @@ async function sifreGuncelle() {
         return;
     }
 
-    // 2. Sunucuya Gönder
     try {
         const response = await fetch('/api/sifre-degistir', {
             method: 'POST',
@@ -878,12 +859,10 @@ async function sifreGuncelle() {
         if (sonuc.success) {
             alert("✅ " + sonuc.message);
             
-            // Inputları temizle
             eskiSifreInput.value = "";
             yeniSifreInput.value = "";
             yeniSifreTekrarInput.value = "";
 
-            // Modalı Kapat (Bootstrap Yöntemiyle)
             const modalElement = document.getElementById('sifreModal');
             const modalInstance = bootstrap.Modal.getInstance(modalElement);
             modalInstance.hide();
@@ -897,7 +876,6 @@ async function sifreGuncelle() {
         alert("Sunucu bağlantı hatası!");
     }
 }
-// script.js dosyasının en altına ekle
 
 let aktifGunlukSoru = null;
 
@@ -905,7 +883,7 @@ async function gunlukGorevAc() {
     const kullanici = mevcutKullaniciyiGetir();
     if (!kullanici) { alert("Önce giriş yapmalısın!"); return; }
 
-    // Modalı aç
+  
     const modalEl = document.getElementById('gunlukGorevModal');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
@@ -922,7 +900,7 @@ async function gunlukGorevAc() {
         const data = await res.json();
 
         if (data.oynandi) {
-            // EĞER OYNANDIYSA: Geri sayım göster
+           
             govde.innerHTML = `
                 <i class="fa-solid fa-hourglass-end text-muted fa-4x mb-3"></i>
                 <h4 class="fw-bold">Görevi Zaten Tamamladın!</h4>
@@ -930,7 +908,7 @@ async function gunlukGorevAc() {
                 <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tamam</button>
             `;
         } else if (data.soru) {
-            // EĞER OYNANMADIYSA: Soruyu göster
+           
             aktifGunlukSoru = data.soru;
             govde.innerHTML = `
                 <span class="badge bg-warning text-dark mb-3">Ödül: 50 Puan</span>
@@ -956,14 +934,14 @@ async function gunlukCevapVer(secilenSik) {
     if (!aktifGunlukSoru) return;
 
     const butonlar = document.querySelectorAll('.gunluk-sik');
-    butonlar.forEach(b => b.disabled = true); // Tıklamayı engelle
+    butonlar.forEach(b => b.disabled = true); 
 
     const dogruCevap = aktifGunlukSoru.dogru_cevap;
     const govde = document.getElementById('gunlukGorevGovde');
     const kullanici = mevcutKullaniciyiGetir();
 
     if (secilenSik === dogruCevap) {
-        // DOĞRU BİLDİ
+      
         govde.innerHTML = `
             <i class="fa-solid fa-gift text-success fa-5x mb-3 animasyon-goster"></i>
             <h3 class="text-success fw-bold">Harikasın!</h3>
@@ -971,18 +949,16 @@ async function gunlukCevapVer(secilenSik) {
             <button class="btn btn-success rounded-pill px-4" data-bs-dismiss="modal">Kapat</button>
         `;
         
-        // Puanı kaydet ve "bugün oynadı" diye işaretle
         await fetch('/api/gunluk-gorev-tamamla', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ kullaniciId: kullanici.id, puan: 50 })
         });
 
-        // Frontend puanını güncelle
         puanVer(50); 
 
     } else {
-        // YANLIŞ BİLDİ
+        
         govde.innerHTML = `
             <i class="fa-solid fa-heart-crack text-danger fa-5x mb-3 animasyon-goster"></i>
             <h3 class="text-danger fw-bold">Maalesef Yanlış...</h3>
@@ -991,7 +967,7 @@ async function gunlukCevapVer(secilenSik) {
             <button class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Kapat</button>
         `;
 
-        // Puan vermeden "bugün oynadı" diye işaretle (Tekrar denemesin diye)
+       
         await fetch('/api/gunluk-gorev-tamamla', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

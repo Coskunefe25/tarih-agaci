@@ -379,22 +379,22 @@ body {
 @keyframes yukariKaydir { to { opacity: 1; transform: translateY(0); } }
 
 .ayirici { width: 100px; height: 4px; background: var(--ikincil-renk); border-radius: 2px; }
-/* Mevcut CSS dosyasının EN ALTINA ekle */
+
 
 .kilitli-kart {
     opacity: 0.7;
-    filter: grayscale(100%); /* Siyah beyaz yap */
-    pointer-events: none; /* Tıklanmasın (JS ile kontrol ediyoruz ama görsel olsun) */
+    filter: grayscale(100%); 
+    pointer-events: none; 
     position: relative;
     cursor: not-allowed !important;
 }
 
 .kilitli-kart:hover {
-    transform: none !important; /* Hareket etmesin */
+    transform: none !important;
     box-shadow: none !important;
 }
 
-/* JS ile click event'i yakalamak için pointer-events'i açıyoruz ama görseli kilitli tutuyoruz */
+
 .ozel-tasarim-kart.kilitli-kart, .tarihi-oge-karti.kilitli-kart {
     pointer-events: auto; 
 }
@@ -420,7 +420,6 @@ body {
     background: white;
     border-radius: 50%;
 }
-/* --- AI CHAT BOT STİLLERİ --- */
 .chat-butonu {
     position: fixed;
     bottom: 30px;
@@ -521,7 +520,7 @@ body {
     color: #fff;
     border-color: #555;
 }
-/* --- SIRALAMA OYUNU STİLLERİ --- */
+
 .siralama-ogesi {
     cursor: grab;
     background-color: var(--kart-arkaplan);
@@ -531,7 +530,7 @@ body {
     padding: 15px;
     font-weight: bold;
     transition: all 0.2s;
-    user-select: none; /* Metin seçimini engelle */
+    user-select: none;
     display: flex;
     align-items: center;
     justify-content: space-between;

@@ -1,13 +1,12 @@
 const { Sequelize, DataTypes } = require('sequelize');
 const sequelize = require('./db');
 
-// Zaman damgalarını (createdAt/updatedAt) kapattık çünkü senin SQL dosyan bunları kullanmıyor.
 
 const Lider = sequelize.define('Lider', {
     ad: { type: DataTypes.STRING },
     donem: { type: DataTypes.STRING },
     bilgi: { type: DataTypes.TEXT },
-    detay: { type: DataTypes.TEXT('long') }, // Uzun HTML içerik için
+    detay: { type: DataTypes.TEXT('long') },
     sira_no: { type: DataTypes.INTEGER }
 }, { tableName: 'liderler', timestamps: false });
 
@@ -21,7 +20,7 @@ const Devlet = sequelize.define('Devlet', {
 }, { tableName: 'devletler', timestamps: false });
 
 const Kategori = sequelize.define('Kategori', {
-    kod: { type: DataTypes.STRING, primaryKey: true }, // 'kod' sütunu ana anahtar
+    kod: { type: DataTypes.STRING, primaryKey: true }, 
     baslik: { type: DataTypes.STRING },
     alt_baslik: { type: DataTypes.STRING },
     ikon: { type: DataTypes.STRING }
@@ -46,9 +45,8 @@ const Kullanici = sequelize.define('Kullanici', {
     kayit_tarihi: { type: DataTypes.DATE, defaultValue: Sequelize.NOW }
 }, { tableName: 'kullanicilar', timestamps: false });
 
-// models.js içindeki KullaniciIlerleme kısmını bul ve bununla değiştir:
 const KullaniciIlerleme = sequelize.define('KullaniciIlerleme', {
-    // BURAYI EKLEMEMİZ LAZIMDI 👇
+   
     id: { 
         type: DataTypes.INTEGER, 
         primaryKey: true, 
@@ -73,17 +71,16 @@ const KonuQuiz = sequelize.define('KonuQuiz', {
     dogru_cevap: { type: DataTypes.CHAR(1) }
 }, { tableName: 'konu_quizleri', timestamps: false });
 
-// İlişkiler (SQL dosyanızdaki foreign key mantığına göre)
+
 Kategori.hasMany(KategoriOgesi, { foreignKey: 'kategori_kod', sourceKey: 'kod' });
 KategoriOgesi.belongsTo(Kategori, { foreignKey: 'kategori_kod', targetKey: 'kod' });
-// models.js içine ekle
+
 
 const GunlukGorevLog = sequelize.define('GunlukGorevLog', {
     kullanici_id: { type: DataTypes.INTEGER },
-    tarih: { type: DataTypes.DATEONLY } // Sadece Yıl-Ay-Gün tutar (Saat tutmaz, böylece kontrol kolaylaşır)
+    tarih: { type: DataTypes.DATEONLY } 
 }, { tableName: 'gunluk_gorev_loglari', timestamps: false });
 
-// Export kısmını da güncellemeyi unutma:
 module.exports = { Lider, Devlet, Kategori, KategoriOgesi, Kullanici, KullaniciIlerleme, KonuQuiz, GunlukGorevLog };
 
 
