@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="acik">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetici Paneli - Tarih Ağacı</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body class="bg-light">
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <h1 class="cinzel-font text-primary"><i class="fa-solid fa-user-gear me-2"></i> Yönetici Paneli</h1>
+            <a href="/" class="btn btn-outline-secondary rounded-pill"><i class="fa-solid fa-home me-2"></i> Siteye Dön</a>
+        </div>
+
+        <h4 class="mb-3 text-muted border-bottom pb-2">➕ Yeni İçerik Ekle</h4>
+        
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-crown me-2"></i> Lider Ekle</div>
+                    <div class="card-body">
+                        <form action="/admin/lider-ekle" method="POST">
+                            <input type="text" name="ad" class="form-control mb-2" required placeholder="Lider Adı">
+                            <input type="text" name="donem" class="form-control mb-2" required placeholder="Dönem">
+                            <textarea name="detay" class="form-control mb-2" rows="2" required placeholder="Detay..."></textarea>
+                            <button type="submit" class="btn btn-sm btn-danger w-100">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-landmark me-2"></i> Devlet Ekle</div>
+                    <div class="card-body">
+                        <form action="/admin/devlet-ekle" method="POST">
+                            <input type="text" name="ad" class="form-control mb-2" required placeholder="Devlet Adı">
+                            <input type="text" name="kurulus" class="form-control mb-2" required placeholder="Kuruluş Yılı">
+                            <input type="text" name="baskent" class="form-control mb-2" required placeholder="Başkent">
+                            <textarea name="detay" class="form-control mb-2" rows="2" required placeholder="Detay..."></textarea>
+                            <button type="submit" class="btn btn-sm btn-success w-100">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-primary text-white"><i class="fa-solid fa-layer-group me-2"></i> Kategori Öğesi Ekle</div>
+                    <div class="card-body">
+                        <form action="/admin/oge-ekle" method="POST">
+                            <select name="kategori_kod" class="form-select mb-2" required>
+                                <% if(locals.kategoriler) { %>
+                                    <% kategoriler.forEach(kat => { %>
+                                        <option value="<%= kat.kod %>"><%= kat.baslik %></option>
+                                    <% }); %>
+                                <% } %>
+                            </select>
+                            <input type="text" name="baslik" class="form-control mb-2" required placeholder="Başlık (Örn: Malazgirt)">
+                            <input type="text" name="aciklama" class="form-control mb-2" required placeholder="Kısa Açıklama">
+                            <textarea name="detay" class="form-control mb-2" rows="2" required placeholder="Detay..."></textarea>
+                            <button type="submit" class="btn btn-sm btn-primary w-100">Kaydet</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mt-4">
+    <div class="card shadow-sm border-0 h-100 border-start border-5 border-warning">
+        <div class="card-header bg-warning text-dark fw-bold"><i class="fa-solid fa-clipboard-question me-2"></i> Konu Testi İçin Soru Ekle</div>
+        <div class="card-body">
+            <form action="/admin/soru-ekle" method="POST">
+                <div class="row g-2">
+                    <div class="col-md-3">
+                        <label class="small text-muted">Konu Tipi</label>
+                        <select name="konu_tipi" class="form-select mb-2" required>
+                            <option value="lider">Lider</option>
+                            <option value="devlet">Devlet</option>
+                            <option value="savaslar">Savaşlar (Öğe)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-muted">Konu ID (Sıra No)</label>
+                        <input type="number" name="konu_id" class="form-control mb-2" required placeholder="Örn: 1">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="small text-muted">Doğru Şık</label>
+                        <select name="dogru_cevap" class="form-select mb-2" required>
+                            <option value="a">A Şıkkı</option>
+                            <option value="b">B Şıkkı</option>
+                            <option value="c">C Şıkkı</option>
+                            <option value="d">D Şıkkı</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <textarea name="soru_metni" class="form-control mb-2 fw-bold" rows="2" required placeholder="Soru Metnini Giriniz..."></textarea>
+                    </div>
+                    <div class="col-md-6"><input type="text" name="sik_a" class="form-control mb-1" required placeholder="A) Seçenek"></div>
+                    <div class="col-md-6"><input type="text" name="sik_b" class="form-control mb-1" required placeholder="B) Seçenek"></div>
+                    <div class="col-md-6"><input type="text" name="sik_c" class="form-control mb-1" required placeholder="C) Seçenek"></div>
+                    <div class="col-md-6"><input type="text" name="sik_d" class="form-control mb-1" required placeholder="D) Seçenek"></div>
+                    
+                    <div class="col-12 mt-2">
+                        <button type="submit" class="btn btn-warning w-100 fw-bold"><i class="fa-solid fa-plus"></i> Soruyu Veritabanına Ekle</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 mt-4">
+    <div class="card shadow-sm border-0 h-100 border-start border-5 border-info">
+        <div class="card-header bg-info text-white fw-bold">
+            <i class="fa-solid fa-pen-nib me-2"></i> Mevcut Konu Anlatımını Düzenle
+        </div>
+        <div class="card-body">
+            <div class="alert alert-light border small">
+                <i class="fa-solid fa-circle-info text-info"></i> 
+                <strong>İpucu:</strong> Güncellemek istediğiniz kişinin veya devletin <strong>ID numarasını</strong> yukarıdaki listelerden bakarak girin. 
+                Yazı içine <code>&lt;br&gt;</code> koyarak alt satıra geçebilirsiniz.
+            </div>
+
+            <form action="/admin/konu-guncelle" method="POST">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <label class="small text-muted fw-bold">Kategori Seç</label>
+                        <select name="konu_tipi" class="form-select" required>
+                            <option value="lider">Liderler</option>
+                            <option value="devlet">Devletler</option>
+                            <option value="oge">Savaşlar/Öğeler</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="small text-muted fw-bold">ID Numarası</label>
+                        <input type="number" name="konu_id" class="form-control" required placeholder="Örn: 3">
+                    </div>
+
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-info text-white w-100 fw-bold">
+                            <i class="fa-solid fa-save"></i> İçeriği Güncelle
+                        </button>
+                    </div>
+
+                    <div class="col-12 mt-2">
+                        <label class="small text-muted fw-bold">Yeni Konu Anlatımı (Detay)</label>
+                        <textarea name="yeni_detay" class="form-control" rows="6" required placeholder="Buraya yeni konu anlatımını yazın..."></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+        <h4 class="mb-3 text-muted border-bottom pb-2">🗑️ Mevcut İçerikleri Yönet</h4>
+
+        <div class="row g-4 mb-5">
+            
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light fw-bold text-danger">Liderler Listesi</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 300px;">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ad</th>
+                                        <th>Dönem</th>
+                                        <th class="text-end">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if(locals.liderler) { %>
+                                        <% liderler.forEach(lider => { %>
+                                        <tr>
+                                            <td>#<%= lider.id %></td>
+                                            <td class="fw-bold"><%= lider.ad %></td>
+                                            <td><%= lider.donem %></td>
+                                            <td class="text-end">
+                                                <form action="/admin/sil/lider" method="POST" onsubmit="return confirm('Bu lideri silmek istediğine emin misin?');">
+                                                    <input type="hidden" name="id" value="<%= lider.id %>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Sil</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light fw-bold text-success">Devletler Listesi</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 300px;">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ad</th>
+                                        <th>Kuruluş</th>
+                                        <th class="text-end">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if(locals.devletler) { %>
+                                        <% devletler.forEach(devlet => { %>
+                                        <tr>
+                                            <td>#<%= devlet.id %></td>
+                                            <td class="fw-bold"><%= devlet.ad %></td>
+                                            <td><%= devlet.kurulus %></td>
+                                            <td class="text-end">
+                                                <form action="/admin/sil/devlet" method="POST" onsubmit="return confirm('Bu devleti silmek istediğine emin misin?');">
+                                                    <input type="hidden" name="id" value="<%= devlet.id %>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Sil</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-light fw-bold text-primary">Kategori Öğeleri (Savaşlar vb.)</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive" style="max-height: 300px;">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Kategori</th>
+                                        <th>Başlık</th>
+                                        <th class="text-end">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if(locals.ogeler) { %>
+                                        <% ogeler.forEach(oge => { %>
+                                        <tr>
+                                            <td>#<%= oge.id %></td>
+                                            <td><span class="badge bg-secondary"><%= oge.kategori_kod %></span></td>
+                                            <td class="fw-bold"><%= oge.baslik %></td>
+                                            <td class="text-end">
+                                                <form action="/admin/sil/oge" method="POST" onsubmit="return confirm('Bu içeriği silmek istediğine emin misin?');">
+                                                    <input type="hidden" name="id" value="<%= oge.id %>">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i> Sil</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <h4 class="mb-3 text-muted border-bottom pb-2">👥 Üye Yönetimi</h4>
+        
+        <div class="row g-4 pb-5">
+            <div class="col-12">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <span>Kayıtlı Kullanıcılar</span>
+                        <span class="badge bg-secondary"><%= (locals.kullanicilar) ? kullanicilar.length : 0 %> Kişi</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 align-middle">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Ad Soyad</th>
+                                        <th>Kullanıcı Adı</th>
+                                        <th>E-Posta</th>
+                                        <th>Şifre</th>
+                                        <th>Puan</th>
+                                        <th class="text-end">İşlem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if(locals.kullanicilar) { %>
+                                        <% kullanicilar.forEach(user => { %>
+                                        <tr>
+                                            <td>#<%= user.id %></td>
+                                            <td class="fw-bold"><%= user.ad %> <%= user.soyad %></td>
+                                            <td><span class="badge bg-light text-dark border"><%= user.kadi %></span></td>
+                                            <td><%= user.eposta %></td>
+                                            
+                                            <td class="text-muted" style="letter-spacing: 2px;">******</td>
+                                            
+                                            <td><span class="badge bg-warning text-dark"><%= user.puan %> P</span></td>
+                                            
+                                            <td class="text-end">
+                                                <form action="/admin/sil/kullanici" method="POST" onsubmit="return confirm('UYARI: <%= user.kadi %> adlı kullanıcıyı ve tüm ilerlemesini silmek üzeresiniz. Emin misiniz?');">
+                                                    <input type="hidden" name="id" value="<%= user.id %>">
+                                                    <button type="submit" class="btn btn-sm btn-danger"><i class="fa-solid fa-user-xmark me-1"></i> Üyeliği Sil</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <tr><td colspan="7" class="text-center py-3">Henüz üye yok.</td></tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

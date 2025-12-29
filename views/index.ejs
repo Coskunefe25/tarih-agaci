@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="acik">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarih Ağacı - İnteraktif Tarih Platformu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+    <div id="kimlik-kapsayici" class="container d-flex justify-content-center align-items-center min-vh-100 position-relative">
+        <div class="kimlik-arkaplan-katmani"></div>
+        
+        <div id="giris-karti" class="card kimlik-karti p-5 shadow-lg animasyon-goster">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-tree text-primary display-4 mb-2"></i>
+                <h2 class="cinzel-font fw-bold">Tarih Ağacı</h2>
+                <p class="text-muted">Geçmişe Yolculuk Başlasın</p>
+            </div>
+            <form onsubmit="event.preventDefault(); girisYap();">
+                <div class="form-floating mb-3">
+                    <input type="text" id="giris-kadi" class="form-control" placeholder="Kullanıcı Adı" required>
+                    <label>Kullanıcı Adı</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" id="giris-sifre" class="form-control" placeholder="Şifre" required>
+                    <label>Şifre</label>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm">Giriş Yap</button>
+            </form>
+            
+            <div class="mt-4 text-center d-flex justify-content-between align-items-center">
+                <small class="text-muted">Hesabın yok mu? <a href="#" class="kimlik-link" onclick="kimlikGoster('kayit')">Hemen Kayıt Ol</a></small>
+            </div>
+
+            <div class="mt-4 pt-3 border-top text-center">
+                <a href="#" onclick="yoneticiKontrol()" class="text-decoration-none text-secondary small fw-bold">
+                    <i class="fa-solid fa-user-shield me-1"></i> Yönetici Girişi
+                </a>
+            </div>
+        </div>
+
+        <div id="kayit-karti" class="card kimlik-karti p-5 shadow-lg d-none animasyon-goster">
+            <div class="text-center mb-4">
+                <h2 class="cinzel-font fw-bold">Aramıza Katıl</h2>
+            </div>
+            <form onsubmit="event.preventDefault(); kayitOl();">
+                <div class="row g-2">
+                    <div class="col-6 mb-3"><div class="form-floating"><input type="text" id="kayit-ad" class="form-control" placeholder="Ad" required><label>İsim</label></div></div>
+                    <div class="col-6 mb-3"><div class="form-floating"><input type="text" id="kayit-soyad" class="form-control" placeholder="Soyad" required><label>Soyisim</label></div></div>
+                </div>
+                <div class="form-floating mb-3"><input type="email" id="kayit-eposta" class="form-control" placeholder="E-Posta" required><label>E-Posta</label></div>
+                <div class="form-floating mb-3"><input type="text" id="kayit-kadi" class="form-control" placeholder="Kullanıcı Adı" required><label>Kullanıcı Adı</label></div>
+                <div class="form-floating mb-3"><input type="password" id="kayit-sifre" class="form-control" placeholder="Şifre" required><label>Şifre</label></div>
+                <button type="submit" class="btn btn-success w-100 py-3 rounded-pill fw-bold shadow-sm">Kayıt Ol</button>
+            </form>
+            <div class="mt-4 text-center"><small class="text-muted">Zaten üye misin? <a href="#" onclick="kimlikGoster('giris')">Giriş Yap</a></small></div>
+         </div>
+    </div>
+
+    <div id="ana-uygulama" class="d-none">
+        
+        <nav class="navbar navbar-expand-lg sticky-top shadow-sm">
+             <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="bolumGoster('anasayfa')">
+                    <i class="fa-solid fa-tree text-warning fs-3"></i>
+                    <span class="cinzel-font fw-bold fs-4 text-light">Tarih Ağacı</span>
+                </a>
+                <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navigasyonCubugu"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse justify-content-end" id="navigasyonCubugu">
+                    <ul class="navbar-nav align-items-center gap-3">
+                        <li class="nav-item"><a class="nav-link active" onclick="bolumGoster('anasayfa')"><i class="fa-solid fa-home me-1"></i> Ana Sayfa</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="bolumGoster('liderler')"><i class="fa-solid fa-crown me-1"></i> Liderler</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="bolumGoster('devletler')"><i class="fa-solid fa-landmark me-1"></i> Devletler</a></li>
+                        <li class="nav-item"><a class="nav-link" onclick="bolumGoster('oyunlar')"><i class="fa-solid fa-gamepad me-1"></i> Oyunlar</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" onclick="bolumGoster('liderlik-tablosu')">
+                                <i class="fa-solid fa-trophy me-1 text-warning"></i> Liderlik
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                          <a class="nav-link dropdown-toggle btn btn-outline-light px-3 border-0" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-user-circle me-1"></i>
+                            <span id="nav-kullanici-adi">Kullanıcı</span>
+                          </a>
+                         <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item" href="#" onclick="bolumGoster('profil'); return false;">
+                                    <i class="fa-solid fa-user me-2"></i> Profilim
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#sifreModal">
+                                    <i class="fa-solid fa-key me-2"></i> Şifre Değiştir
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#" onclick="cikisYap(); return false;">
+                                    <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Çıkış Yap
+                                </a>
+                            </li>
+                        </ul>
+                        <li class="nav-item"><button class="btn btn-sm btn-tema-degistir rounded-circle border-0 text-white" id="tema-degistir-btn" onclick="temayiDegistir()"><i class="fa-solid fa-moon fs-5"></i></button></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <section id="anasayfa" class="icerik-bolumu active">
+            <header class="kahraman-bolumu d-flex align-items-center justify-content-center text-center text-white">
+                <div class="kahraman-icerik p-5 rounded-4 shadow-lg">
+                    <h1 class="display-3 cinzel-font fw-bold mb-3">Geçmişin İzinde</h1>
+                    <p class="lead mb-4 fst-italic">"Tarihini bilmeyen bir millet, yok olmaya mahkumdur."</p>
+                    <button class="btn btn-lg btn-ozel px-5 py-3" onclick="document.getElementById('kesfet-alani').scrollIntoView({behavior: 'smooth'})"><i class="fa-solid fa-arrow-down me-2"></i> Keşfetmeye Başla</button>
+                </div>
+            </header>
+
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-lg-8 mb-5" id="kesfet-alani">
+                          <div class="d-flex align-items-center mb-4 border-bottom pb-2" style="border-color: var(--ikincil-renk) !important;">
+                            <h2 class="bolum-basligi cinzel-font m-0 fw-bold" style="color: var(--ana-renk);">Keşfetmeye Başla</h2>
+                        </div>
+                        <div class="row g-4" id="kategoriler-izgarasi"></div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card gunluk-kart shadow sticky-top" style="top: 100px; z-index: 90;">
+                            <div class="card-header text-center py-3">
+                                <h5 class="m-0 cinzel-font fw-bold"><i class="fa-solid fa-calendar-day me-2"></i> Tarihte Bugünün Lideri</h5>
+                            </div>
+                            <div id="gunun-lideri-karti" class="card-body text-center p-4">
+                                <div class="gunluk-ikon-sarmalayici mb-3"><i class="fa-solid fa-chess-king gunluk-ikon"></i></div>
+                                <h3 class="cinzel-font fw-bold">Yükleniyor...</h3>
+                                <p class="small fst-italic">Her gün 00:00'da yenilenir.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kategori-detay" class="icerik-bolumu d-none">
+            <div class="container py-5">
+                 <button class="btn btn-outline-secondary mb-4 rounded-pill px-4" onclick="bolumGoster('anasayfa')"><i class="fa-solid fa-arrow-left me-2"></i> Ana Sayfaya Dön</button>
+                <div class="text-center mb-5">
+                     <h2 id="kat-detay-baslik" class="display-5 cinzel-font fw-bold" style="color: var(--ana-renk);">Başlık</h2>
+                     <p id="kat-detay-altbaslik" class="lead text-muted">Alt Başlık</p>
+                 </div>
+                 <div id="kat-detay-icerik" class="row g-4"></div>
+            </div>
+        </section>
+
+        <section id="liderler" class="icerik-bolumu d-none">
+            <div class="container py-5">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 cinzel-font" style="color: var(--ana-renk);">Tarihe Yön Veren Liderler</h2>
+                    <div class="ayirici mx-auto my-3"></div>
+                    <p class="text-muted">Sırayla öğren, kendini sına ve bir sonraki liderin kilidini aç!</p>
+                </div>
+                <div class="row g-4" id="liderler-izgarasi"></div>
+            </div>
+        </section>
+
+        <section id="devletler" class="icerik-bolumu d-none">
+            <div class="container py-5">
+                <div class="text-center mb-5">
+                    <h2 class="display-5 cinzel-font text-success">Büyük Türk Devletleri</h2>
+                    <div class="ayirici mx-auto my-3"></div>
+                    <p class="text-muted">Devletleri sırasıyla keşfet ve bilgilerini test et.</p>
+                </div>
+                <div class="row g-4" id="devletler-izgarasi"></div>
+            </div>
+        </section>
+        
+        <section id="oyunlar" class="icerik-bolumu d-none">
+            <div class="container py-5">
+                <div class="text-center mb-5">
+                    <h2 class="cinzel-font display-4" style="color: var(--ana-renk);">Oyun Arenası</h2>
+                    <div class="ayirici mx-auto my-3"></div>
+                    <p class="lead">Tarih bilgini sına, puanları topla ve rütbeni yükselt!</p>
+                </div>
+                
+                <div id="oyun-menusu" class="row justify-content-center g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="ozel-tasarim-kart oyun-karti h-100 text-center p-4 shadow-lg" onclick="oyunuBaslat('quiz')">
+                            <div class="mb-3 mx-auto">
+                                <i class="fa-solid fa-question text-primary fs-1"></i>
+                            </div>
+                            <h3 class="cinzel-font kart-baslik">Genel Kültür</h3>
+                            <p class="kart-metin">Karışık tarih sorularıyla kendini sına.</p>
+                            <button class="btn btn-outline-primary rounded-pill kart-buton w-100">Oyna</button>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="ozel-tasarim-kart oyun-karti h-100 text-center p-4 shadow-lg" onclick="oyunuBaslat('eslestirme')">
+                            <div class="mb-3 mx-auto">
+                                <i class="fa-solid fa-check-double text-success fs-1"></i>
+                            </div>
+                            <h3 class="cinzel-font kart-baslik">Eşleştirme</h3>
+                            <p class="kart-metin">Liderleri ve olayları doğru eşleştir.</p>
+                            <button class="btn btn-outline-success rounded-pill kart-buton w-100">Oyna</button>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="ozel-tasarim-kart oyun-karti h-100 text-center p-4 shadow-lg" onclick="oyunuBaslat('siralama')">
+                            <div class="mb-3 mx-auto">
+                                <i class="fa-solid fa-arrow-down-1-9 text-warning fs-1"></i>
+                            </div>
+                            <h3 class="cinzel-font kart-baslik">Zaman Tüneli</h3>
+                            <p class="kart-metin">Olayları kronolojik sıraya diz.</p>
+                            <button class="btn btn-outline-warning rounded-pill kart-buton w-100">Oyna</button>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="ozel-tasarim-kart h-100 text-center p-4 shadow-lg position-relative" 
+                             style="border-left: 5px solid #e74c3c; background: linear-gradient(to bottom right, #fff, #ffecec);"
+                             onclick="gunlukGorevAc()">
+                            <span class="position-absolute top-0 end-0 badge bg-danger m-3">Her Gün Yenilenir</span>
+                            <div class="mb-3 mx-auto">
+                                <i class="fa-solid fa-calendar-check text-danger fs-1"></i>
+                            </div>
+                            <h3 class="cinzel-font kart-baslik text-danger">Günün Görevi</h3>
+                            <p class="kart-metin">Her gün tek bir şans! Soruyu bil, ekstra puanı kap.</p>
+                            <button class="btn btn-outline-danger rounded-pill kart-buton w-100">Görevi Aç</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="bilgi-yarismasi-alani" class="d-none mt-4">
+                    <button class="btn btn-sm btn-secondary mb-3" onclick="oyunMenusuneDon()">
+                        <i class="fa-solid fa-arrow-left"></i> Menüye Dön
+                    </button>
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center p-3">
+                            <h4 class="m-0 cinzel-font"><i class="fa-solid fa-brain me-2"></i> Bilgi Yarışması</h4>
+                            <span class="badge bg-light text-primary fs-6">Puan: <span id="quiz-puani">0</span></span>
+                        </div>
+                        <div class="card-body text-center p-5">
+                            <h3 id="soru-metni" class="mb-5 fw-bold text-dark">Soru Yükleniyor...</h3>
+                            <div id="secenekler-alani" class="d-grid gap-3 col-lg-8 mx-auto"></div>
+                            <div id="quiz-sonucu" class="mt-4 fw-bold fs-5" style="min-height: 30px;"></div>
+                        </div>
+                        <div class="card-footer text-muted text-center">
+                            Soru <span id="soru-suan">1</span> / <span id="soru-toplam">5</span>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div id="eslestirme-alani" class="d-none mt-4">
+                    <button class="btn btn-sm btn-secondary mb-3" onclick="oyunMenusuneDon()">
+                        <i class="fa-solid fa-arrow-left"></i> Menüye Dön
+                    </button>
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center p-3">
+                            <h4 class="m-0 cinzel-font"><i class="fa-solid fa-puzzle-piece me-2"></i> Eşleştirme Oyunu</h4>
+                            <span class="badge bg-light text-success fs-6">Puan: <span id="eslestirme-puani">0</span></span>
+                        </div>
+                        <div class="card-body p-4">
+                            <p class="text-center mb-4 text-muted">Kartlara tıklayıp eşlerini bul!</p>
+                            <div id="eslestirme-izgarasi" class="row g-3 justify-content-center"></div>
+                            <div id="eslestirme-sonucu" class="text-center mt-3 fw-bold fs-5"></div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div id="siralama-alani" class="d-none mt-4">
+                    <button class="btn btn-sm btn-secondary mb-3" onclick="oyunMenusuneDon()">
+                        <i class="fa-solid fa-arrow-left"></i> Menüye Dön
+                    </button>
+                    
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center p-3">
+                            <h4 class="m-0 cinzel-font"><i class="fa-solid fa-hourglass-half me-2"></i> Zaman Tüneli</h4>
+                            <span class="badge bg-dark text-white fs-6">Puan: <span id="siralama-puani">0</span></span>
+                        </div>
+                        
+                        <div class="card-body p-4 text-center">
+                            <div class="alert alert-light border shadow-sm mb-4">
+                                <i class="fa-solid fa-info-circle text-primary me-2"></i>
+                                Aşağıdaki olayları tutup sürükleyerek <strong>ESKİDEN (Üstte) -> YENİYE (Altta)</strong> doğru sırala!
+                            </div>
+                            
+                            <div id="siralama-listesi" class="list-group col-lg-7 mx-auto mb-4 text-start"></div>
+
+                            <button class="btn btn-success btn-lg rounded-pill px-5 shadow" onclick="siralamayiKontrolEt()">
+                                <i class="fa-solid fa-check me-2"></i> Sıralamayı Kontrol Et
+                            </button>
+                            
+                            <div id="siralama-sonucu" class="mt-3 fw-bold fs-5" style="min-height: 30px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="profil" class="icerik-bolumu d-none">
+                        <div class="card shadow border-0 mb-4 profil-karti">
+                            <div class="card-body text-center p-5">
+                                <div class="profil-avatar mb-3 mx-auto"><span class="display-4 text-white">👤</span></div>
+                                <h3 id="profil-kadi" class="cinzel-font fw-bold mb-1">Kullanıcı Adı</h3>
+                                <p id="profil-adsoyad" class="text-muted mb-2">Ad Soyad</p>
+                                <span id="profil-rol" class="badge bg-gradient-altin text-dark mb-4 px-3 py-2">Üye</span>
+                                <div class="row mt-4 pt-4 border-top">
+                                    <div class="col-6 border-end"><h6 class="text-uppercase text-muted small">Toplam Puan</h6><p class="display-6 fw-bold text-primary mb-0" id="profil-puan">0</p></div>
+                                    <div class="col-6"><h6 class="text-uppercase text-muted small">Rütbe</h6><p class="fs-4 fw-bold text-warning mb-0" id="profil-rutbe">Çırak</p></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card shadow border-0">
+                            <div class="card-header bg-dark text-white py-3"><h5 class="m-0 cinzel-font"><i class="fa-solid fa-trophy me-2 text-warning"></i> Rütbe Sistemi</h5></div>
+                            <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0"><thead class="bg-light"><tr><th class="ps-4">Rozet</th><th>Rütbe Adı</th><th>Puan</th><th class="text-center">Durum</th></tr></thead><tbody id="rozet-tablosu"></tbody></table></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="liderlik-tablosu" class="icerik-bolumu d-none">
+            <div class="container py-5">
+               <div class="text-center mb-5">
+                    <h2 class="display-4 cinzel-font" style="color: var(--ana-renk);">
+                        <i class="fa-solid fa-trophy text-warning me-2"></i> Şampiyonlar Ligi
+                    </h2>
+                    <div class="ayirici mx-auto my-3"></div>
+                    <p class="lead">Tarihin en bilgin isimleri burada yarışıyor.</p>
+                </div>
+
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card shadow-lg border-0">
+                            <div class="card-header bg-dark text-white p-4 d-flex justify-content-between align-items-center">
+                                <h4 class="m-0 cinzel-font">En Yüksek Puanlar</h4>
+                                <span class="badge bg-warning text-dark">Top 100</span>
+                            </div>
+                            
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="bg-light">
+                                            <tr>
+                                                <th class="ps-4" style="width: 100px;">Sıra</th>
+                                                <th>Kullanıcı</th>
+                                                <th>Rütbe</th>
+                                                <th class="text-end pe-4">Puan</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% if(locals.enIyiler && enIyiler.length > 0) { %>
+                                                <% enIyiler.forEach((uye, index) => { %>
+                                                  <% 
+                                                        let siraIcon = "";
+                                                        let satirClass = "";
+                                                        if(index === 0) { 
+                                                            siraIcon = '<i class="fa-solid fa-crown text-warning fa-2x"></i>';
+                                                            satirClass = "bg-warning bg-opacity-10";
+                                                        } else if(index === 1) { 
+                                                            siraIcon = '<i class="fa-solid fa-medal text-secondary fa-2x"></i>';
+                                                        } else if(index === 2) { 
+                                                            siraIcon = '<i class="fa-solid fa-medal text-danger fa-2x" style="color: #cd7f32 !important;"></i>';
+                                                        } else {
+                                                            siraIcon = `<span class="fw-bold fs-5 text-muted">#${index + 1}</span>`;
+                                                        }
+
+                                                        let rutbe = "Acemi";
+                                                        if(uye.puan >= 50) rutbe = "Tarih Kalfası";
+                                                        if(uye.puan >= 150) rutbe = "Tarih Ustası";
+                                                        if(uye.puan >= 300) rutbe = "Bilge Kağan";
+                                                        if(uye.puan >= 500) rutbe = "Cihan Hakanı";
+                                                        if(uye.puan >= 1000) rutbe = "Ebedi Kahraman";
+                                                    %>
+                                                    
+                                                    <tr class="<%= satirClass %>">
+                                                        <td class="ps-4 text-center"><%- siraIcon %></td>
+                                                        <td>
+                                                            <div class="d-flex align-items-center">
+                                                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3 fw-bold" 
+                                                                     style="width: 40px; height: 40px; font-size: 1.2rem;">
+                                                                    <%= uye.ad.charAt(0) %>
+                                                                </div>
+                                                                <div>
+                                                                    <h5 class="mb-0 fw-bold text-dark"><%= uye.kadi %></h5>
+                                                                    <small class="text-muted"><%= uye.ad %> <%= uye.soyad %></small>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge rounded-pill bg-light text-dark border">
+                                                                <%= rutbe %>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-end pe-4">
+                                                            <span class="fw-bold fs-5 text-primary"><%= uye.puan %></span> P
+                                                        </td>
+                                                    </tr>
+                                                <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4" class="text-center py-5 text-muted">
+                                                        Henüz kimse puan kazanmamış. İlk lider sen ol!
+                                                    </td>
+                                                </tr>
+                                            <% } %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div> 
+
+    <div class="modal fade" id="dersModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title cinzel-font fw-bold" id="dersBaslik">Ders Başlığı</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="dersGovdesi"></div>
+                <div class="modal-footer border-0 justify-content-between">
+                    <span class="text-muted fst-italic" id="dersDurum">Okuma Modu</span>
+                    <button type="button" class="btn btn-primary rounded-pill px-4" id="dersAksiyonBtn">Teste Başla <i class="fa-solid fa-arrow-right ms-2"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="chat-butonu" onclick="chatAcKapat()">
+        <i class="fa-solid fa-comments"></i>
+    </div>
+
+    <div class="chat-penceresi" id="chatPenceresi">
+        <div class="chat-baslik">
+            <span><i class="fa-solid fa-robot me-2"></i>Tarihçi Bot</span>
+            <button type="button" class="btn-close btn-close-white" onclick="chatAcKapat()"></button>
+        </div>
+        <div class="chat-govde" id="chatMesajlari">
+            <div class="mesaj bot">
+                Merhaba reis! Ben Tarihçi. Türk tarihi veya dünya tarihi ile ilgili merak ettiğin her şeyi bana sorabilirsin.
+            </div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" class="form-control" placeholder="Bir soru sor..." onkeypress="enterKontrol(event)">
+            <button class="btn btn-primary" onclick="mesajGonder()" style="background-color: var(--ana-renk); border:none;">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="sifreModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title cinzel-font">
+                        <i class="fa-solid fa-user-lock me-2"></i> Şifre Güncelleme
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form onsubmit="event.preventDefault(); sifreGuncelle();">
+                        
+                        <div class="form-floating mb-3">
+                            <input type="password" id="modal-eski-sifre" class="form-control" placeholder="Mevcut Şifre" required>
+                            <label>Mevcut Şifreniz</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="password" id="modal-yeni-sifre" class="form-control" placeholder="Yeni Şifre" required>
+                            <label>Yeni Şifreniz</label>
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            <input type="password" id="modal-yeni-sifre-tekrar" class="form-control" placeholder="Yeni Şifre Tekrar" required>
+                            <label>Yeni Şifreyi Onayla</label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary py-2 fw-bold rounded-pill">
+                                <i class="fa-solid fa-save me-2"></i> Değişiklikleri Kaydet
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal fade" id="gunlukGorevModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title cinzel-font fw-bold"><i class="fa-solid fa-calendar-check me-2"></i> Günün Görevi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center" id="gunlukGorevGovde">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Server'dan (Express/EJS) gelen verileri Client (JS) tarafına aktarıyoruz
+        // JSON formatını bozmadan, sadece script injection riskini önlüyoruz
+        const liderlerVerisi = <%- (locals.liderler) ? JSON.stringify(liderler).replace(/</g, '\\u003c') : '[]' %>;
+        const devletlerVerisi = <%- (locals.devletler) ? JSON.stringify(devletler).replace(/</g, '\\u003c') : '[]' %>;
+        const rawKategoriler = <%- (locals.kategoriler) ? JSON.stringify(kategoriler).replace(/</g, '\\u003c') : '[]' %>;
+        const rawOgeler = <%- (locals.kategoriOgeleri) ? JSON.stringify(kategoriOgeleri).replace(/</g, '\\u003c') : '[]' %>;
+
+        // Kategorileri script.js'in anlayacağı formata çeviriyoruz
+        const kategoriVerisi = {};
+        if (rawKategoriler && rawOgeler) {
+            rawKategoriler.forEach(cat => {
+                kategoriVerisi[cat.kod] = {
+                    baslik: cat.baslik, 
+                    altBaslik: cat.alt_baslik, 
+                    ikon: cat.ikon,
+                    ogeler: rawOgeler.filter(oge => oge.kategori_kod === cat.kod)
+                };
+            });
+        }
+
+        // Kullanıcı oturum bilgisi (Varsa localStorage'a kaydet)
+        const sunucuKullanici = <%- (locals.user) ? JSON.stringify(user) : 'null' %>;
+        if(sunucuKullanici) {
+            localStorage.setItem('tarih_user', JSON.stringify(sunucuKullanici));
+        }
+
+        function yoneticiKontrol() {
+            const sifre = prompt("Yönetici Paneli Erişim Şifresi:");
+            if (sifre === "admin" || sifre === "12345") {
+                window.location.href = "/admin";
+            } else if (sifre !== null) {
+                alert("Hatalı şifre! Erişim reddedildi.");
+            }
+        }
+
+        // --- YAPAY ZEKA DETAY GETİRME FONKSİYONU ---
+        // DİKKAT: Fonksiyon ismini 'yapayZekaDersiAc' yaptık.
+        window.yapayZekaDersiAc = function(tip, index) {
+            
+            // 1. Tıklanan veriyi bul (ID lazım)
+            let veri;
+            if(tip === 'lider') veri = liderlerVerisi[index];
+            else if(tip === 'devlet') veri = devletlerVerisi[index];
+            else {
+                if (kategoriVerisi[tip] && kategoriVerisi[tip].ogeler) {
+                    veri = kategoriVerisi[tip].ogeler[index];
+                }
+            }
+
+            if (!veri) { console.error("Veri bulunamadı!"); return; }
+
+            // Global değişkenleri güncelle
+            window.aktifKonu = { tip: tip, id: veri.id, index: index, veri: veri };
+
+            // 2. Modalı hazırla
+            const modalElement = document.getElementById('dersModal');
+            const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            
+            document.getElementById('dersBaslik').innerText = veri.ad || veri.baslik;
+            const icerikDiv = document.getElementById('dersGovdesi');
+            const aksiyonBtn = document.getElementById('dersAksiyonBtn');
+            const durumText = document.getElementById('dersDurum');
+
+            // --- DÜZELTME BURADA BAŞLIYOR ---
+            // Butonu her açılışta fabrika ayarlarına döndürüyoruz:
+            aksiyonBtn.classList.remove('d-none'); // Gizliyse göster
+            aksiyonBtn.disabled = false; // Pasifse aktif et
+            aksiyonBtn.innerHTML = 'Teste Başla <i class="fa-solid fa-arrow-right ms-2"></i>'; // Yazısını düzelt
+            aksiyonBtn.className = "btn btn-primary rounded-pill px-4"; // Rengini düzelt
+            durumText.innerText = "Okuma Modu"; // Durum yazısını düzelt
+            // --- DÜZELTME BİTİŞ ---
+
+            // Buton tıklama olayı
+            aksiyonBtn.onclick = function() {
+                // script.js içindeki fonksiyonları çağır
+                if(typeof quizBaslat === "function") quizBaslat(tip, veri.id);
+                else if(typeof dersQuiziniBaslat === "function") dersQuiziniBaslat(tip, veri.id);
+            };
+
+            // 3. Ekrana "YÜKLENİYOR" animasyonu bas
+            icerikDiv.innerHTML = `
+                <div class="text-center p-5">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
+                    <h4 class="mt-3 text-muted">Tarihçi senin için notlarını karıştırıyor...</h4>
+                    <p>İlk kez açılıyorsa bu işlem 10-15 saniye sürebilir.</p>
+                </div>
+            `;
+            modal.show();
+
+            // 4. Server'a ID ile sor
+            fetch('/api/detay-getir-veya-olustur', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: veri.id, tip: tip })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    icerikDiv.innerHTML = `<div class="alert alert-danger">Hata: ${data.error}</div>`;
+                } else {
+                    // İçerik geldi, ekrana bas
+                    icerikDiv.innerHTML = `<div class="animasyon-goster">${data.icerik}</div>`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                icerikDiv.innerHTML = `<div class="alert alert-danger">Sunucu hatası! Bağlantını kontrol et.</div>`;
+            });
+        };
+    </script>
+
+    <script src="/script.js"></script>
+</body>
+</html>
